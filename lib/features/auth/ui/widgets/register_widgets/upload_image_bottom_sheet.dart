@@ -1,17 +1,21 @@
 import 'dart:ui';
 
+import 'package:animoo/core/di/injectable.dart';
 import 'package:animoo/core/extentions/context_extentions.dart';
 import 'package:animoo/core/extentions/sized_box_extentions.dart';
+import 'package:animoo/core/shared/services/image_picker_service.dart';
 import 'package:animoo/core/theme/app_colors.dart';
 import 'package:animoo/core/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 class UploadImageBottomSheet extends StatelessWidget {
   const UploadImageBottomSheet({super.key});
 
-  static void show(BuildContext context) {
-    showModalBottomSheet(
+  static Future<XFile?> show(BuildContext context) {
+    return showModalBottomSheet<XFile?>(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) {
@@ -30,7 +34,14 @@ class UploadImageBottomSheet extends StatelessWidget {
           // upload image options
           _buildItemButton(
             title: "Photo Gallery",
-            onTap: () {},
+            onTap: () async {
+              final pickedImage = await getIt<ImagePickerService>().pickImage(
+                source: ImageSource.gallery,
+              );
+              if (context.mounted) {
+                context.pop(pickedImage);
+              }
+            },
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(10.r),
               topRight: Radius.circular(10.r),
@@ -45,7 +56,14 @@ class UploadImageBottomSheet extends StatelessWidget {
 
           _buildItemButton(
             title: "Camera",
-            onTap: () {},
+            onTap: () async {
+              final pickedImage = await getIt<ImagePickerService>().pickImage(
+                source: ImageSource.camera,
+              );
+              if (context.mounted) {
+                context.pop(pickedImage);
+              }
+            },
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(10.r),
               bottomRight: Radius.circular(10.r),
@@ -59,7 +77,7 @@ class UploadImageBottomSheet extends StatelessWidget {
             title: "Cancel",
             alpha: .9,
             onTap: () {
-              Navigator.pop(context);
+              context.pop();
             },
             borderRadius: BorderRadius.circular(10.r),
           ),

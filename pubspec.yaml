@@ -17,15 +17,20 @@ dependencies:
   flutter_native_splash: ^2.4.8
   dotted_border: ^3.1.0
   pinput: ^6.0.2
+  image_picker: ^1.2.3
+  image_cropper: ^12.2.1
+  get_it: ^9.2.1
+  injectable: ^3.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  injectable_generator: ^3.1.1
+  build_runner: ^2.15.1
 
 
 flutter:
-
   uses-material-design: true
 
   assets:
