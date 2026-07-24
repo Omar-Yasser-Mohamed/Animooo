@@ -43,7 +43,7 @@ class AppButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(radius ?? 6),
             ),
         elevation: 0,
-        minimumSize: Size(width ?? context.screenWidth, height ?? 46.h),
+        minimumSize: Size(width ?? context.screenWidth, height ?? 48.h),
       ),
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 200),

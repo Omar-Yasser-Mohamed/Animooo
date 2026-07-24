@@ -1,6 +1,7 @@
 import 'package:animoo/core/extentions/sized_box_extentions.dart';
 import 'package:animoo/core/theme/app_colors.dart';
-import 'package:animoo/core/theme/app_text_field.dart';
+import 'package:animoo/core/utils/app_validators.dart';
+import 'package:animoo/core/widgets/app_text_field.dart';
 import 'package:animoo/core/theme/app_text_styles.dart';
 import 'package:animoo/core/widgets/app_button.dart';
 import 'package:animoo/features/auth/ui/widgets/login_widgets/forget_password_button.dart';
@@ -14,11 +15,26 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  AutovalidateMode autovalidateMode = AutovalidateMode.disabled;
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   bool _isVisable = false;
 
   @override
   Widget build(BuildContext context) {
     return Form(
+      key: formKey,
+      autovalidateMode: autovalidateMode,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -26,8 +42,12 @@ class _LoginFormState extends State<LoginForm> {
 
           6.verticalSizedBox,
 
-          const AppTextField(
+          AppTextField(
+            controller: _emailController,
             hintText: "Enter your email address",
+            validator: (value) {
+              return AppValidators.required(value, fieldName: "Email");
+            },
           ),
 
           16.verticalSizedBox,
@@ -37,9 +57,13 @@ class _LoginFormState extends State<LoginForm> {
           6.verticalSizedBox,
 
           AppTextField(
+            controller: _passwordController,
             hintText: "********",
             obscureText: !_isVisable,
             suffixIcon: _buildVisibilityIcon(),
+            validator: (value) {
+              return AppValidators.required(value, fieldName: "Password");
+            },
           ),
 
           const ForgetPasswordButton(),
@@ -48,7 +72,14 @@ class _LoginFormState extends State<LoginForm> {
 
           AppButton(
             text: "Log In",
-            onPressed: () {},
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+              } else {
+                setState(() {
+                  autovalidateMode = AutovalidateMode.always;
+                });
+              }
+            },
           ),
         ],
       ),

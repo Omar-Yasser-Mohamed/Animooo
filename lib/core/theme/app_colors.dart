@@ -12,6 +12,7 @@ class AppColors {
   // Borders
   static const Color borderLightGery = Color(0xffEDEDED);
   static const Color borderOtpField = Color(0xffD6D6D6);
+  static const Color borderGray = Color(0xffD8D8D8);
 
   // Texts
   static const Color textPrimary = Color(0xff000000);

@@ -5,8 +5,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class LoginFooter extends StatelessWidget {
-  const LoginFooter({super.key});
+class RegisterFooter extends StatelessWidget {
+  const RegisterFooter({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,12 +14,12 @@ class LoginFooter extends StatelessWidget {
       TextSpan(
         style: AppTextStyles.pM14.copyWith(color: AppColors.textGray),
         children: [
-          const TextSpan(text: "Don't have an account? "),
+          const TextSpan(text: "Have an account already? "),
           TextSpan(
-            text: "Sign up now",
+            text: "Log in",
             recognizer: TapGestureRecognizer()
               ..onTap = () {
-                context.go(AppRoutes.register);
+                context.go(AppRoutes.login);
               },
             style: AppTextStyles.pSB14.copyWith(
               color: AppColors.primary,
