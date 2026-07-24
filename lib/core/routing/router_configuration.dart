@@ -4,11 +4,16 @@ import 'package:animoo/features/auth/ui/screens/login_screen.dart';
 import 'package:animoo/features/auth/ui/screens/otp_verification_screen.dart';
 import 'package:animoo/features/auth/ui/screens/register_screen.dart';
 import 'package:animoo/features/auth/ui/screens/reset_password_screen.dart';
+import 'package:animoo/features/splash/ui/screens/splash_screen.dart';
 import 'package:go_router/go_router.dart';
 
 abstract class RouterConfiguration {
   static final router = GoRouter(
     routes: [
+      GoRoute(
+        path: AppRoutes.splash,
+        builder: (context, state) => const SplashScreen(),
+      ),
       GoRoute(
         path: AppRoutes.login,
         builder: (context, state) => const LoginScreen(),
