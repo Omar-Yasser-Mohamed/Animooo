@@ -32,7 +32,7 @@ class PasswordValidationSection extends StatelessWidget {
             6.verticalSizedBox,
 
             _PasswordRequirementItem(
-              text: "Minimum characters 12.",
+              text: "Minimum characters 8.",
               isValid: validation.hasMinLength,
             ),
 

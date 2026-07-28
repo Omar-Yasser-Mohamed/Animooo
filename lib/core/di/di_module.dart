@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
@@ -9,4 +10,7 @@ abstract class AppModule {
 
   @lazySingleton
   ImageCropper get imageCropper => ImageCropper();
+
+  @lazySingleton
+  Connectivity get connectivity => Connectivity();
 }

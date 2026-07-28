@@ -1,12 +1,20 @@
 import 'package:animoo/core/extentions/sized_box_extentions.dart';
+import 'package:animoo/core/routing/app_routes.dart';
+import 'package:animoo/core/shared/models/user_model.dart';
+import 'package:animoo/core/shared/states/ui_state.dart';
 import 'package:animoo/core/theme/app_colors.dart';
+import 'package:animoo/core/utils/app_toasts.dart';
 import 'package:animoo/core/utils/app_validators.dart';
 import 'package:animoo/core/widgets/app_text_field.dart';
 import 'package:animoo/core/theme/app_text_styles.dart';
 import 'package:animoo/core/widgets/app_button.dart';
+import 'package:animoo/features/auth/ui/args/otp_args.dart';
+import 'package:animoo/features/auth/ui/view_models/signup_provider.dart';
 import 'package:animoo/features/auth/ui/widgets/register_widgets/upload_profile_image_card.dart';
 import 'package:animoo/features/auth/ui/widgets/shared/password_validation_section.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class RegisterForm extends StatefulWidget {
   const RegisterForm({super.key});
@@ -30,6 +38,34 @@ class _RegisterFormState extends State<RegisterForm> {
   bool _isVisable = false;
   bool _isConfirmVisable = false;
 
+  late final SignupProvider _signupProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _signupProvider = context.read<SignupProvider>();
+    _signupProvider.addListener(_listener);
+  }
+
+  void _listener() {
+    final state = _signupProvider.signupState;
+    if (state is Success<UserModel>) {
+      AppToasts.showSuccess(
+        context,
+        message: 'A verification code has been sent to your email',
+      );
+      context.push(
+        AppRoutes.otpVerification,
+        extra: OtpArgs(
+          purpose: OtpPurpose.emailVerification,
+          email: state.data.email,
+        ),
+      );
+    } else if (state is Error<UserModel>) {
+      AppToasts.showError(context, message: state.failure.message);
+    }
+  }
+
   @override
   void dispose() {
     _firstNameController.dispose();
@@ -38,6 +74,7 @@ class _RegisterFormState extends State<RegisterForm> {
     _phoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _signupProvider.removeListener(_listener);
     super.dispose();
   }
 
@@ -168,20 +205,42 @@ class _RegisterFormState extends State<RegisterForm> {
 
           28.verticalSizedBox,
 
-          AppButton(
-            text: "Sign Up",
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                _formKey.currentState!.save();
-              } else {
-                setState(() {
-                  _autovalidateMode = AutovalidateMode.always;
-                });
-              }
+          Consumer<SignupProvider>(
+            builder: (context, provider, child) {
+              return AppButton(
+                isLoading: provider.signupState is Loading<UserModel>,
+                text: "Sign Up",
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    if (_signupProvider.validateImage()) {
+                      await _register();
+                    } else {
+                      AppToasts.showError(
+                        context,
+                        message: "Please upload profile image",
+                      );
+                    }
+                  } else {
+                    setState(() {
+                      _autovalidateMode = AutovalidateMode.always;
+                    });
+                  }
+                },
+              );
             },
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _register() async {
+    await _signupProvider.signup(
+      firstName: _firstNameController.text,
+      lastName: _lastNameController.text,
+      email: _emailController.text,
+      phone: _phoneController.text,
+      password: _passwordController.text,
     );
   }
 

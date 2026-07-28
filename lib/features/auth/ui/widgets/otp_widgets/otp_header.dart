@@ -1,18 +1,21 @@
 import 'package:animoo/core/extentions/sized_box_extentions.dart';
 import 'package:animoo/core/theme/app_colors.dart';
 import 'package:animoo/core/theme/app_text_styles.dart';
+import 'package:animoo/features/auth/ui/args/otp_args.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class OtpHeader extends StatelessWidget {
   const OtpHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final args = GoRouterState.of(context).extra as OtpArgs;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "OTP Verfication",
+          args.purpose.title,
           style: AppTextStyles.oR20.copyWith(
             color: AppColors.primary,
           ),

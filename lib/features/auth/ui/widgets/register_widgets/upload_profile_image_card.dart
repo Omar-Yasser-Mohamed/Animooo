@@ -4,25 +4,21 @@ import 'package:animoo/core/constants/app_icons.dart';
 import 'package:animoo/core/extentions/sized_box_extentions.dart';
 import 'package:animoo/core/theme/app_colors.dart';
 import 'package:animoo/core/theme/app_text_styles.dart';
+import 'package:animoo/features/auth/ui/view_models/signup_provider.dart';
 import 'package:animoo/features/auth/ui/widgets/register_widgets/upload_image_bottom_sheet.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
-class UploadProfileImageCard extends StatefulWidget {
+class UploadProfileImageCard extends StatelessWidget {
   const UploadProfileImageCard({super.key});
 
   @override
-  State<UploadProfileImageCard> createState() => _UploadProfileImageCardState();
-}
-
-class _UploadProfileImageCardState extends State<UploadProfileImageCard> {
-  XFile? image;
-
-  @override
   Widget build(BuildContext context) {
+    final image = context.watch<SignupProvider>().image;
+
     return DottedBorder(
       options: const RoundedRectDottedBorderOptions(
         color: AppColors.primary,
@@ -32,13 +28,8 @@ class _UploadProfileImageCardState extends State<UploadProfileImageCard> {
       ),
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: () async {
-          final pickedImage = await UploadImageBottomSheet.show(context);
-          if (pickedImage != null) {
-            setState(() {
-              image = pickedImage;
-            });
-          }
+        onTap: () {
+          UploadImageBottomSheet.show(context);
         },
         child: SizedBox(
           height: 200.h,
@@ -48,7 +39,7 @@ class _UploadProfileImageCardState extends State<UploadProfileImageCard> {
                   children: [
                     Positioned.fill(
                       child: Image.file(
-                        File(image!.path),
+                        File(image.path),
                         fit: BoxFit.fitHeight,
                       ),
                     ),
@@ -56,7 +47,7 @@ class _UploadProfileImageCardState extends State<UploadProfileImageCard> {
                     PositionedDirectional(
                       top: 10,
                       end: 10,
-                      child: _buildRemoveButton(),
+                      child: _buildRemoveButton(context),
                     ),
                   ],
                 )
@@ -89,10 +80,10 @@ class _UploadProfileImageCardState extends State<UploadProfileImageCard> {
     );
   }
 
-  Widget _buildRemoveButton() {
+  Widget _buildRemoveButton(BuildContext context) {
     return InkWell(
       splashColor: Colors.transparent,
-      onTap: () => setState(() => image = null),
+      onTap: () => context.read<SignupProvider>().removeImage(),
       child: Container(
         padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
@@ -111,3 +102,4 @@ class _UploadProfileImageCardState extends State<UploadProfileImageCard> {
     );
   }
 }
+

@@ -1,25 +1,29 @@
 import 'dart:ui';
 
-import 'package:animoo/core/di/injectable.dart';
 import 'package:animoo/core/extentions/context_extentions.dart';
 import 'package:animoo/core/extentions/sized_box_extentions.dart';
-import 'package:animoo/core/shared/services/image_picker_service.dart';
 import 'package:animoo/core/theme/app_colors.dart';
 import 'package:animoo/core/theme/app_text_styles.dart';
+import 'package:animoo/features/auth/ui/view_models/signup_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class UploadImageBottomSheet extends StatelessWidget {
   const UploadImageBottomSheet({super.key});
 
-  static Future<XFile?> show(BuildContext context) {
-    return showModalBottomSheet<XFile?>(
+  static Future<void> show(BuildContext context) {
+    final signupProvider = context.read<SignupProvider>();
+    return showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return const UploadImageBottomSheet();
+        return ChangeNotifierProvider.value(
+          value: signupProvider,
+          child: const UploadImageBottomSheet(),
+        );
       },
     );
   }
@@ -35,11 +39,11 @@ class UploadImageBottomSheet extends StatelessWidget {
           _buildItemButton(
             title: "Photo Gallery",
             onTap: () async {
-              final pickedImage = await getIt<ImagePickerService>().pickImage(
-                source: ImageSource.gallery,
-              );
+              await context
+                  .read<SignupProvider>()
+                  .pickImage(ImageSource.gallery);
               if (context.mounted) {
-                context.pop(pickedImage);
+                context.pop();
               }
             },
             borderRadius: BorderRadius.only(
@@ -57,11 +61,11 @@ class UploadImageBottomSheet extends StatelessWidget {
           _buildItemButton(
             title: "Camera",
             onTap: () async {
-              final pickedImage = await getIt<ImagePickerService>().pickImage(
-                source: ImageSource.camera,
-              );
+              await context
+                  .read<SignupProvider>()
+                  .pickImage(ImageSource.camera);
               if (context.mounted) {
-                context.pop(pickedImage);
+                context.pop();
               }
             },
             borderRadius: BorderRadius.only(
@@ -120,3 +124,4 @@ class UploadImageBottomSheet extends StatelessWidget {
     );
   }
 }
+
