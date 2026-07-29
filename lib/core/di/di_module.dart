@@ -1,4 +1,5 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
@@ -13,4 +14,7 @@ abstract class AppModule {
 
   @lazySingleton
   Connectivity get connectivity => Connectivity();
+
+  @lazySingleton
+  FlutterSecureStorage get flutterSecureStorage => const FlutterSecureStorage();
 }

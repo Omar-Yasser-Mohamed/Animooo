@@ -9,5 +9,6 @@ abstract class ApiConstants {
   static const String signup = "$api/signup";
   static const String forgetPassword = "$api/forget_password";
   static const String verifyCode = "$api/verfication_code";
-
+  static const String resetPassword = "$api/create_new_possword";
+  static const String refreshToken = "$api/generateAccessToken";
 }

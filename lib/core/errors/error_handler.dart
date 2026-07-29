@@ -181,6 +181,12 @@ class ErrorHandler {
         message: FailureCode.accountNotExists.message,
       );
     }
+    if (messageLower.contains(ApiErrorMessages.invalidVerficationCode)) {
+      return AppFailure(
+        failureCode: FailureCode.invalidVerficationCode,
+        message: FailureCode.invalidVerficationCode.message,
+      );
+    }
     return fallback;
   }
 }

@@ -1,12 +1,16 @@
 import 'package:animoo/core/di/injectable.dart';
 import 'package:animoo/core/routing/app_routes.dart';
+import 'package:animoo/features/auth/data/repos/auth_repo.dart';
 import 'package:animoo/features/auth/ui/screens/forget_pass_screen.dart';
 import 'package:animoo/features/auth/ui/screens/login_screen.dart';
 import 'package:animoo/features/auth/ui/screens/otp_verification_screen.dart';
 import 'package:animoo/features/auth/ui/screens/register_screen.dart';
 import 'package:animoo/features/auth/ui/screens/reset_password_screen.dart';
+import 'package:animoo/features/auth/ui/view_models/forget_password_provider.dart';
 import 'package:animoo/features/auth/ui/view_models/login_provider.dart';
+import 'package:animoo/features/auth/ui/view_models/reset_password_provider.dart';
 import 'package:animoo/features/auth/ui/view_models/signup_provider.dart';
+import 'package:animoo/features/auth/ui/view_models/verify_code_provider.dart';
 import 'package:animoo/features/splash/ui/screens/splash_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -34,15 +38,29 @@ abstract class RouterConfiguration {
       ),
       GoRoute(
         path: AppRoutes.forgetPass,
-        builder: (context, state) => const ForgetPassScreen(),
+        builder: (context, state) => ChangeNotifierProvider(
+          create: (_) => getIt<ForgetPasswordProvider>(),
+          child: const ForgetPassScreen(),
+        ),
       ),
       GoRoute(
         path: AppRoutes.otpVerification,
-        builder: (context, state) => const OtpVerificationScreen(),
+        builder: (context, state) => MultiProvider(
+          providers: [
+            ChangeNotifierProvider(
+              create: (_) => getIt<VerifyCodeProvider>(),
+            ),
+            Provider<AuthRepo>.value(value: getIt<AuthRepo>()),
+          ],
+          child: const OtpVerificationScreen(),
+        ),
       ),
       GoRoute(
         path: AppRoutes.resetPassword,
-        builder: (context, state) => const ResetPasswordScreen(),
+        builder: (context, state) => ChangeNotifierProvider(
+          create: (_) => getIt<ResetPasswordProvider>(),
+          child: const ResetPasswordScreen(),
+        ),
       ),
     ],
   );

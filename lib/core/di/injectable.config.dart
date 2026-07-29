@@ -12,19 +12,31 @@
 import 'package:animoo/core/di/di_module.dart' as _i793;
 import 'package:animoo/core/network/api_service.dart' as _i991;
 import 'package:animoo/core/network/dio_service.dart' as _i675;
+import 'package:animoo/core/network/interceptors/auth_interceptor.dart'
+    as _i350;
 import 'package:animoo/core/network/network_connectivity.dart' as _i377;
 import 'package:animoo/core/shared/services/image_picker_service.dart' as _i498;
+import 'package:animoo/core/shared/services/token/token_service.dart' as _i978;
+import 'package:animoo/core/shared/services/token/token_service_impl.dart'
+    as _i839;
 import 'package:animoo/features/auth/data/data_sources/auth_remote_data_source.dart'
     as _i584;
 import 'package:animoo/features/auth/data/data_sources/auth_remote_data_source_impl.dart'
     as _i107;
 import 'package:animoo/features/auth/data/repos/auth_repo.dart' as _i102;
 import 'package:animoo/features/auth/data/repos/auth_repo_impl.dart' as _i617;
+import 'package:animoo/features/auth/ui/view_models/forget_password_provider.dart'
+    as _i556;
 import 'package:animoo/features/auth/ui/view_models/login_provider.dart'
     as _i624;
+import 'package:animoo/features/auth/ui/view_models/reset_password_provider.dart'
+    as _i164;
 import 'package:animoo/features/auth/ui/view_models/signup_provider.dart'
     as _i323;
+import 'package:animoo/features/auth/ui/view_models/verify_code_provider.dart'
+    as _i887;
 import 'package:connectivity_plus/connectivity_plus.dart' as _i895;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:image_cropper/image_cropper.dart' as _i184;
 import 'package:image_picker/image_picker.dart' as _i183;
@@ -41,15 +53,26 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i183.ImagePicker>(() => appModule.imagePicker);
     gh.lazySingleton<_i184.ImageCropper>(() => appModule.imageCropper);
     gh.lazySingleton<_i895.Connectivity>(() => appModule.connectivity);
-    gh.lazySingleton<_i675.DioService>(() => _i675.DioService());
+    gh.lazySingleton<_i558.FlutterSecureStorage>(
+      () => appModule.flutterSecureStorage,
+    );
+    gh.lazySingleton<_i978.TokenService>(
+      () => _i839.TokenServiceImpl(gh<_i558.FlutterSecureStorage>()),
+    );
     gh.lazySingleton<_i377.NetworkConnectivity>(
       () => _i377.NetworkConnectivity(gh<_i895.Connectivity>()),
+    );
+    gh.lazySingleton<_i350.AuthInterceptor>(
+      () => _i350.AuthInterceptor(gh<_i978.TokenService>()),
     );
     gh.lazySingleton<_i498.ImagePickerService>(
       () => _i498.ImagePickerService(
         gh<_i183.ImagePicker>(),
         gh<_i184.ImageCropper>(),
       ),
+    );
+    gh.lazySingleton<_i675.DioService>(
+      () => _i675.DioService(gh<_i350.AuthInterceptor>()),
     );
     gh.lazySingleton<_i991.ApiService>(
       () => _i991.ApiService(
@@ -58,19 +81,34 @@ extension GetItInjectableX on _i174.GetIt {
       ),
     );
     gh.lazySingleton<_i584.AuthRemoteDataSource>(
-      () => _i107.AuthRemoteDataSourceImpl(gh<_i991.ApiService>()),
+      () => _i107.AuthRemoteDataSourceImpl(
+        gh<_i991.ApiService>(),
+        gh<_i978.TokenService>(),
+      ),
     );
     gh.lazySingleton<_i102.AuthRepo>(
-      () => _i617.AuthRepoImpl(gh<_i584.AuthRemoteDataSource>()),
-    );
-    gh.factory<_i624.LoginProvider>(
-      () => _i624.LoginProvider(gh<_i102.AuthRepo>()),
+      () => _i617.AuthRepoImpl(
+        gh<_i584.AuthRemoteDataSource>(),
+        gh<_i978.TokenService>(),
+      ),
     );
     gh.factory<_i323.SignupProvider>(
       () => _i323.SignupProvider(
         gh<_i102.AuthRepo>(),
         gh<_i498.ImagePickerService>(),
       ),
+    );
+    gh.factory<_i556.ForgetPasswordProvider>(
+      () => _i556.ForgetPasswordProvider(gh<_i102.AuthRepo>()),
+    );
+    gh.factory<_i624.LoginProvider>(
+      () => _i624.LoginProvider(gh<_i102.AuthRepo>()),
+    );
+    gh.factory<_i164.ResetPasswordProvider>(
+      () => _i164.ResetPasswordProvider(gh<_i102.AuthRepo>()),
+    );
+    gh.factory<_i887.VerifyCodeProvider>(
+      () => _i887.VerifyCodeProvider(gh<_i102.AuthRepo>()),
     );
     return this;
   }

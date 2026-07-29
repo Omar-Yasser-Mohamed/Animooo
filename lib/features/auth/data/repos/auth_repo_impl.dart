@@ -5,16 +5,19 @@ import 'package:animoo/core/utils/either.dart';
 import 'package:animoo/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:animoo/features/auth/data/models/auth_response.dart';
 import 'package:animoo/features/auth/data/models/login_request.dart';
+import 'package:animoo/features/auth/data/models/reset_password_request.dart';
 import 'package:animoo/features/auth/data/models/signup_request.dart';
 import 'package:animoo/features/auth/data/models/verification_code_request.dart';
 import 'package:animoo/features/auth/data/repos/auth_repo.dart';
+import 'package:animoo/core/shared/services/token/token_service.dart';
 import 'package:injectable/injectable.dart';
 
 @LazySingleton(as: AuthRepo)
 class AuthRepoImpl implements AuthRepo {
   final AuthRemoteDataSource _remoteDataSource;
+  final TokenService _tokenService;
 
-  AuthRepoImpl(this._remoteDataSource);
+  AuthRepoImpl(this._remoteDataSource, this._tokenService);
 
   @override
   Future<Either<Failure, AuthResponse>> login(LoginRequest request) async {
@@ -53,6 +56,33 @@ class AuthRepoImpl implements AuthRepo {
     try {
       final response = await _remoteDataSource.verifyCode(request);
       return Right(response);
+    } catch (e) {
+      return Left(ErrorHandler.handle(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, AuthResponse>> resetPassword(
+    ResetPasswordRequest request,
+  ) async {
+    try {
+      final response = await _remoteDataSource.resetPassword(request);
+      return Right(response);
+    } catch (e) {
+      return Left(ErrorHandler.handle(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> refreshAccessToken() async {
+    try {
+      final token = await _remoteDataSource.refreshAccessToken();
+      final refreshToken = await _tokenService.getRefreshToken();
+      await _tokenService.saveTokens(
+        accessToken: token,
+        refreshToken: refreshToken!,
+      );
+      return Right(token);
     } catch (e) {
       return Left(ErrorHandler.handle(e));
     }

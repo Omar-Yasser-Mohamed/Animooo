@@ -16,6 +16,7 @@ enum FailureCode {
   emailAlreadyExists,
   accountNotVerified,
   accountNotExists,
+  invalidVerficationCode,
   unknown,
 }
 
@@ -56,6 +57,8 @@ extension FailureCodeExtension on FailureCode {
         return 'Account not verified';
       case FailureCode.accountNotExists:
         return 'Account not exists';
+      case FailureCode.invalidVerficationCode:
+        return 'Invalid verfication code';
       case FailureCode.unknown:
         return 'Something went wrong';
     }
